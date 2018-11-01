@@ -33,9 +33,7 @@ Use the kmeans() function setting k to 2 and nstart=20
  Inspect/print the results
  
 Q. How many points are in each cluster?
-```{r}
-k$size
-```
+
 
 Q. What ‘component’ of your result object details- 
 -cluster size?
