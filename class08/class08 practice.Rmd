@@ -1,0 +1,17 @@
+---
+title: "class08 practise"
+author: Khine Win 
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+```{r}
+x <- read.csv("UK_foods.csv")
+dim(x)
+```
+

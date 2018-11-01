@@ -1,0 +1,276 @@
+---
+title: "Class 8"
+author: Khine Win
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## K-means clustering
+
+Our first example with **kmean()** function.
+
+```{r}
+# Example plot to see how Rmarkdown works
+plot(1:10,typ="l")
+```
+
+
+back to kmean ...
+
+```{r}
+# Generate some example data for clustering
+tmp <- c(rnorm(30,-3), rnorm(30,3))
+x <- cbind(x=tmp, y=rev(tmp))
+plot(x)
+```
+
+Use the kmeans() function setting k to 2 and nstart=20
+
+
+ Inspect/print the results
+ 
+Q. How many points are in each cluster?
+```{r}
+k$size
+```
+
+Q. What ‘component’ of your result object details- 
+-cluster size?
+
+ - cluster assignment/membership?
+ - cluster center?
+ Plot x colored by the kmeans cluster assignment and
+ add cluster centers as blue points
+ Q. Repeat for k=3, which has the lower tot.withinss? 
+
+```{r}
+k  <- kmeans(x, centers=2, nstart= 20)
+k
+```
+
+Inspect/print the results
+ 
+Q. How many points are in each cluster?
+
+
+Q. What ‘component’ of your result object details- 
+-cluster size?
+```{r}
+k$size
+```
+
+
+ - cluster assignment/membership?
+```{r}
+k$cluster
+```
+
+```{r}
+table(k$cluster)
+```
+ 
+ - cluster center?
+```{r}
+k$centers
+```
+ 
+ Plot x colored by the kmeans cluster assignment and
+ add cluster centers as blue points
+```{r}
+
+palette(c("blue","red"))
+plot(x, col=k$cluster)
+points(k$centers, col="green",pch=20, cex=3)
+```
+ 
+ Q. Repeat for k=3, which has the lower tot.withinss? 
+```{r}
+k2 <- kmeans(x, centers = 2, nstart = 20)
+k3 <- kmeans(x, centers = 3, nstart = 20)
+k4 <- kmeans(x, centers = 4, nstart = 20)
+k5 <- kmeans(x, centers = 5, nstart = 20)
+
+k2$tot.withinss
+k3$tot.withinss
+k4$tot.withinss
+k5$tot.withinss
+
+plot(c(k2$tot.withinss,k3$tot.withinss,k4$tot.withinss,k5$tot.withinss), type = "b")
+```
+ 
+```{r}
+k3  <- kmeans(x, centers = 3, nstart= 20)
+k3$tot.withinss
+k$tot.withinss
+
+```
+ 
+##Hierarchical clustering in R 
+
+let's try out the **hclust()**fcuntions for Hierarchical clustering in R 
+```{r}
+d <- dist(x)
+hc <- hclust(d)
+plot(hc)
+```
+
+```{r}
+plot(hc)
+# draw a line on the dendrogram
+abline(h=8, col="red")
+
+# cut the tree to yeild cluster membership vector
+cutree(hc, h=8) 
+cutree(hc, k=2)
+```
+
+
+### A more "real" example of data clustering 
+```{r}
+# Step 1. Generate some example data for clustering
+x <- rbind(
+ matrix(rnorm(100, mean=0, sd = 0.3), ncol = 2), # c1
+ matrix(rnorm(100, mean = 1, sd = 0.3), ncol = 2), # c2
+ matrix(c(rnorm(50, mean = 1, sd = 0.3), # c3
+ rnorm(50, mean = 0, sd = 0.3)), ncol = 2))
+colnames(x) <- c("x", "y")
+# Step 2. Plot the data without clustering
+plot(x)
+# Step 3. Generate colors for known clusters
+# (just so we can compare to hclust results)
+col <- as.factor( rep(c("c1","c2","c3"), each=50) )
+
+grp.names  <- rep(c("red","blue","black"), each=50)
+col <- as.factor(rep(c("red","blue","black"), each=50))
+
+palette(c("red","blue","darkgreen"))
+plot(x, col=col,pch=20)
+```
+
+ Q. Use the dist(), hclust(), plot() and cutree()
+functions to return 2 and 3 clusters
+```{r}
+d  <- dist(x)
+hc  <- hclust(d)
+plot(hc)
+```
+cutree()
+functions to return 2 and 3 clusters
+
+```{r}
+grp2  <- cutree(hc,k=2)
+grp3   <- cutree(hc,k=3)
+plot(x, col=grp3, pch=20)
+```
+
+ Q. How does this compare to your known 'col' groups?
+```{r}
+# use the table function !
+table(grp3,col)
+```
+ 
+
+
+# princial component analysis 
+
+lets make up some data with quite a few dimension 
+
+```{r}
+## Initialize a blank 100 row by 10 column matrix
+mydata <- matrix(nrow=100, ncol=10)
+## Lets label the rows gene1, gene2 etc. to gene100
+rownames(mydata) <- paste("gene", 1:100, sep="")
+## Lets label the first 5 columns wt1, wt2, wt3, wt4 and wt5
+## and the last 5 ko1, ko2 etc. to ko5 (for "knock-out")
+colnames(mydata) <- c( paste("wt", 1:5, sep=""),
+ paste("ko", 1:5, sep="") )
+## Fill in some fake read counts
+for(i in 1:nrow(mydata)) {
+ wt.values <- rpois(5, lambda=sample(x=10:1000, size=1))
+ ko.values <- rpois(5, lambda=sample(x=10:1000, size=1))
+
+ mydata[i,] <- c(wt.values, ko.values)
+}
+head(mydata)
+```
+
+
+
+
+```{r}
+head(t(mydata))
+```
+
+
+Now lets try to find "structure"" in this data with **prcomp()**
+```{r}
+pca <- prcomp(t(mydata), scale=TRUE)
+pca
+```
+
+
+
+make a PC plot of PC1 vs PC2 for this I use the '$x' component of our output. (i.e, pca$x).
+
+```{r}
+## A basic PC1 vs PC2 2-D plot
+plot(pca$x[,1], pca$x[,2]) 
+```
+
+
+
+
+let;s see how well our PC are doing (i,e how much variance form the original data are they capatureing )
+
+```{r}
+## Precent variance is often more informative to look at
+pca.var <- pca$sdev^2
+pca.var.per <- round(pca.var/sum(pca.var)*100, 1)
+
+pca.var.per
+```
+
+
+
+Make a "screen plot"" to see the variance captured in each PC
+```{r}
+barplot(pca.var.per, main="Scree Plot",
+ xlab="Principal Component", ylab="Percent Variation")
+```
+
+
+
+lets make our PC more useful...
+```{r}
+## A vector of colors for wt and ko samples
+colvec <- colnames(mydata)
+colvec[grep("wt", colvec)] <- "red"
+colvec[grep("ko", colvec)] <- "blue"
+plot(pca$x[,1], pca$x[,2], col=colvec, pch=16,
+ xlab=paste0("PC1 (", pca.var.per[1], "%)"),
+ ylab=paste0("PC2 (", pca.var.per[2], "%)")) 
+
+```
+
+
+
+
+
+```{r}
+x <- read.csv("UK_foods.csv")
+```
+
+
+
+
+
+
+
+
+
+
+
+
