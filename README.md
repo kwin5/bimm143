@@ -1,2 +1,3 @@
 # bimm143
-my class repo for bimm143 at UCSD
+my class reposotiry  for bimm143 (Introduction to bioinformatics) at UCSD,
+
