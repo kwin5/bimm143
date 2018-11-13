@@ -43,6 +43,41 @@ lig
 write.pdb(lig, "1hsg_ligand.pdb")
 ```
 
+## blocking with Vina
+We run this commads:
+'~/Downloads/autodock_vina_1_1_2_mac/bin/vina --config config.txt --log log.txt'
+
+
+## Readd docking reuslts
+we got a file all.pdbqt that we need to make nito a PDB format
+
+```{r}
+res <- read.pdb("all.pdbqt", multi=TRUE)
+write.pdb(res, "results.pdb")
+```
+
+```{r}
+res
+```
+
+To assess the results quantitatively we will calculate the RMSD (root mean square distance)
+between each of the docking results and the known crystal structure using the bio3d package.
+Back in RStudio read the original ligand with added hydrogens that you produced earlier and
+use the rmsd() function to compare to your docking results.
+
+```{r}
+ori <- read.pdb("1hsg_ligand.pdbqt")
+rmsd(ori, res)
+```
+
+
+
+
+
+
+
+
+
 
 
 
